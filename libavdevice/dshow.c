@@ -1271,7 +1271,9 @@ static int dshow_read_packet(AVFormatContext *s, AVPacket *pkt)
             } else if (s->flags & AVFMT_FLAG_NONBLOCK) {
                 return AVERROR(EAGAIN);
             } else {
-                WaitForMultipleObjects(2, ctx->event, 0, INFINITE);
+                if (WaitForMultipleObjects(2, ctx->event, 0, 100) == WAIT_TIMEOUT) {
+                    return AVERROR(EAGAIN);
+                }
             }
         }
     }
